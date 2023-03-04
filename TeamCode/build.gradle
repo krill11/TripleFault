@@ -41,7 +41,6 @@ apply plugin: 'kotlin-android'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation project(':FtcRobotController')
-    implementation files('../libs/Vuforia.jar')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
     implementation "org.jetbrains.kotlin:kotlin-script-runtime:$kotlinVersion"
 }
