@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Team.OpModes
+package org.firstinspires.ftc.teamcode.Team.OpModes.TeleOp
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -8,8 +8,8 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-@TeleOp
-class FieldCentricStrafeTest : LinearOpMode() {
+@TeleOp(name="Field Centric Strafing")
+class FieldCentric : LinearOpMode() {
     var robot = Robot()
     @Throws(InterruptedException::class)
     override fun runOpMode() {
