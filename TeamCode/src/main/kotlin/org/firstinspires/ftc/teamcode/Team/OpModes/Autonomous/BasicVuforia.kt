@@ -89,7 +89,7 @@ class BasicVuforia : LinearOpMode() {
 
         // We also indicate which camera we wish to use.
         parameters.cameraName = webcamName
-l
+
         // Turn off Extended tracking.  Set this true if you want Vuforia to track beyond the target.
         parameters.useExtendedTracking = true
 
