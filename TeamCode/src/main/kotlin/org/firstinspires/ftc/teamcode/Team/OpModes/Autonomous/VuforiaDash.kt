@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.robotcontroller.external.samples
+package org.firstinspires.ftc.teamcode.Team.OpModes.Autonomous
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
 
 
-@Autonomous(name = "Budget OpenCV")
-class BasicAuto : LinearOpMode() {
+@Autonomous(name = "Vuforia (Dashboard)")
+class VuforiaDash : LinearOpMode() {
     private var lastLocation: OpenGLMatrix? = null
     private var vuforia: VuforiaLocalizer? = null
     private var targets: VuforiaTrackables? = null
@@ -79,20 +79,23 @@ class BasicAuto : LinearOpMode() {
                 packet.put("status", "alive")
                 packet.put("x", 0)
                 packet.put("y", 0)
-                packet.fieldOverlay()
-                    .setFill("blue")
-                    .fillRect((translation[0] / mmPerInch).toString().toDouble(), (translation[1] / mmPerInch).toString().toDouble(), 18.0, 18.0)
-                    .setFill("red")
-                    .fillRect(-9.0, -9.0, 18.0, 18.0)
-                dashboard.sendTelemetryPacket(packet)
+
                 telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f", translation[0] / mmPerInch, translation[1] / mmPerInch, translation[2] / mmPerInch
                 )
                 val rotation = Orientation.getOrientation(lastLocation,AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES
                 )
+                var radianHeading = Math.toRadians((rotation.thirdAngle).toString().toDouble())
+                val xpoints: DoubleArray = doubleArrayOf((Math.cos(radianHeading))*18, -(Math.cos(radianHeading))*18, -(Math.cos(radianHeading))*18, (Math.cos(radianHeading))*18)
+                val ypoints: DoubleArray = doubleArrayOf((Math.sin(radianHeading))*18, (Math.sin(radianHeading))*18, -(Math.sin(radianHeading))*18, -(Math.sin(radianHeading))*18)
+
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle,rotation.secondAngle, rotation.thirdAngle
                 )
                 packet.put("x", translation[0])
                 packet.put("y", translation[1])
+                packet.fieldOverlay()
+                    .setFill("blue")
+                    .fillPolygon(xpoints, ypoints)
+                dashboard.sendTelemetryPacket(packet)
             } else {
                 telemetry.addData("Visible Target", "none")
             }
@@ -111,7 +114,7 @@ class BasicAuto : LinearOpMode() {
             )
     }
     companion object {
-        private const val VUFORIA_KEY = "AefyGkf/////AAABmVaLghCbNkcilCcb/n6vVzhEpnJFTN6EdtGHkwkZn36bTcE2lnkMGoy2fbkUWDbNWTvzceo1KVcOrha9cw7WB6Em4oKdOPP15MG1BNJZg7TNkujWo2Z66uGILH5YhSeDjRUSUYJXHXVn8pKd1/Kr1p55vzZUcIr77V7w/zuGJckkFur4R8uleByiA5P80AewJotkp9+b17d+YRWDPlDCnD3VRPnSpWivKil4qzFS1uc8Ifin+cycZtNHMWuYRX/e1E7e7n5v+9HQVUDFk6ZuTxwy07tbxuDijedeC3pQxp10pIbJ2ZHxJGExnQjET42ZCImRip+j6Kdc4lTTNKczt0C6kp77NiYvQLWM/gCNrIUC"
+        private const val VUFORIA_KEY = "ATuhS5P/////AAABmR8UXvLT90ReroEHDfFojsI7Aa6SANQWVEBufLRaRQVNvLfnvDga0q1F7LQ3sFTKew0TFr6fHjRnvZxKz6g03jljG3Ou26MSob0I59jRyD6NTV6NP0V87CnZ+BMvs8vvAW1lIYJISJBR9wjnhQBk9NnF73J2AXo29TrS7Z+OdmYNsom0JTg6FaIx/aRkhOXVaiVOEs6yC3yRZqLsN2GRJYu3YDxw6O5JYbyIVRnjpRTq5A8HmVKcZsWfkJASiLxpGVP+KWewfd6q/4SgdPvHzrp6yCE4rbfBbhNuxU1xJZDp9rH3CcVPkU7sqmoZezogL0Le60wzRRgQR5GUJ+dj5BCzXIwI1MXPQIgdwdRbTgdm"
         private const val mmPerInch = 25.4f
         private const val mmTargetHeight =
             6 * mmPerInch

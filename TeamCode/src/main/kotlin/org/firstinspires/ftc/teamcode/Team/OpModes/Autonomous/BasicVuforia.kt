@@ -60,7 +60,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.*
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Budget OpenCV")
+@Autonomous(name = "Vuforia (Basic)")
 class BasicVuforia : LinearOpMode() {
     // Class Members
     private var lastLocation: OpenGLMatrix? = null
