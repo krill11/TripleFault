@@ -23,17 +23,3 @@ The project contains several folders, the uses of which will be detailed here. *
       - This has two subdirectories, the Autonomous, and the TeleOp. Autonomous modes are modes that run in the first 30 seconds of the match, and allow the robot to perform tasks by itself. TeleOp modes are modes where a driver drives the robot using a game controller, in the last 2:30 of an FTC match.
 
 ***
-
-## Credits
-
-##### Kirill Lutsenko - President
-
-##### Sergey Lutsenko - Financing
-
-##### HDN - Funding Supplied
-
-##### Sang Park - President of Mechanical Department
-
-##### Owen Kwan - Co President of Programming
-
-##### Aiden Shi - Co President of Programming
