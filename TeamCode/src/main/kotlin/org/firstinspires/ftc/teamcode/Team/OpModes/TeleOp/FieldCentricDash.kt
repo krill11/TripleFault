@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
@@ -12,8 +13,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-@Autonomous(name = "Vuforia (Dashboard)")
-class VuforiaDash : LinearOpMode() {
+@TeleOp(name = "Field Centric Strafe (DashBoard)")
+class FieldCentricDash : LinearOpMode() {
     private var lastLocation: OpenGLMatrix? = null
     private var vuforia: VuforiaLocalizer? = null
     private var targets: VuforiaTrackables? = null
