@@ -88,3 +88,6 @@ lint/tmp/
 
 # macos sucks
 **/*.DS_Store
+
+# secrets
+secrets.gradle
