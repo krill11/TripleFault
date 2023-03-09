@@ -124,7 +124,7 @@ class VuforiaDash : LinearOpMode() {
             )
     }
     companion object {
-        private const val VUFORIA_KEY = "ATuhS5P/////AAABmR8UXvLT90ReroEHDfFojsI7Aa6SANQWVEBufLRaRQVNvLfnvDga0q1F7LQ3sFTKew0TFr6fHjRnvZxKz6g03jljG3Ou26MSob0I59jRyD6NTV6NP0V87CnZ+BMvs8vvAW1lIYJISJBR9wjnhQBk9NnF73J2AXo29TrS7Z+OdmYNsom0JTg6FaIx/aRkhOXVaiVOEs6yC3yRZqLsN2GRJYu3YDxw6O5JYbyIVRnjpRTq5A8HmVKcZsWfkJASiLxpGVP+KWewfd6q/4SgdPvHzrp6yCE4rbfBbhNuxU1xJZDp9rH3CcVPkU7sqmoZezogL0Le60wzRRgQR5GUJ+dj5BCzXIwI1MXPQIgdwdRbTgdm"
+        private const val VUFORIA_KEY = ""
         private const val mmPerInch = 25.4f
         private const val mmTargetHeight =
             6 * mmPerInch
