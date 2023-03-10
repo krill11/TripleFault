@@ -100,6 +100,8 @@ class VuforiaDash : LinearOpMode() {
                     .setFill("blue")
                     .setStroke("black")
                     .strokePolyline(xpoints, ypoints)
+                    .setStroke("red")
+                    .strokePolyline(xface, yface)
                 dashboard.sendTelemetryPacket(packet)
                 telemetry.addData("X1", xpoints[0])
                 telemetry.addData("Y1", ypoints[0])
