@@ -43,4 +43,7 @@ dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
     implementation "org.jetbrains.kotlin:kotlin-script-runtime:$kotlinVersion"
+
+    implementation 'org.apache.commons:commons-math3:3.6.1'
+    implementation 'com.acmerobotics.roadrunner:core:0.5.6'
 }
