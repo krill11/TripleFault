@@ -90,4 +90,4 @@ lint/tmp/
 **/*.DS_Store
 
 # secrets
-secrets.gradle
+TeamCode/src/main/kotlin/org/firstinspires/ftc/teamcode/Team/Secrets.kt

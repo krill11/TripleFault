@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.navigation.*
+import org.firstinspires.ftc.teamcode.Team.Secrets;
 
 
 @Autonomous(name = "Vuforia (Dashboard)")
@@ -116,7 +117,7 @@ class VuforiaDash : LinearOpMode() {
     }
 
     companion object {
-        private val VUFORIA_KEY = System.getProperty("VUFORIA_KEY") ?: throw Exception("VUFORIA_KEY is missing");
+        private const val VUFORIA_KEY = Secrets.VUFORIA_KEY;
         private const val mmPerInch = 25.4f
         private const val mmTargetHeight =
             6 * mmPerInch

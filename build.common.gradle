@@ -19,10 +19,6 @@ import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
 
-Properties props = new Properties()
-props.load(new FileInputStream(getRootDir().toPath().resolve("secrets.gradle").toFile()))
-System.properties.putAll(props)
-
 android {
 
     compileSdkVersion 29
