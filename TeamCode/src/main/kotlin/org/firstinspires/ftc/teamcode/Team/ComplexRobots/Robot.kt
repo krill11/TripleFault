@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF
 import org.firstinspires.ftc.robotcore.external.navigation.*
+import org.firstinspires.ftc.teamcode.Team.Secrets;
 
 /**
  *    This file is here for the addition of other hardware components onto the basic robot
@@ -247,7 +248,7 @@ class Robot : Mecanum() {
     }
 
     companion object {
-        private val VUFORIA_KEY = System.getProperty("VUFORIA_KEY") ?: throw Exception("VUFORIA_KEY is missing");
+        private const val VUFORIA_KEY = Secrets.VUFORIA_KEY;
 
         // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
         // We will define some constants and conversions here
