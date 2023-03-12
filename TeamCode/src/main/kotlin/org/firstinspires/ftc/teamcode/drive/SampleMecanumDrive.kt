@@ -225,31 +225,27 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
         setDrivePower(vel)
     }
 
-//    @get:Override
-//    val wheelPositions: List<Double>
-//        get() {
-//            lastEncPositions.clear()
-//            val wheelPositions: ArrayList<Double> = ArrayList()
-//            for (motor in motors) {
-//                val position: Integer = motor.currentPosition as Integer
-//                lastEncPositions.add(position)
-//                wheelPositions.add(encoderTicksToInches(position as Double))
-//            }
-//            return wheelPositions
-//        }
-//
-//    @get:Override
-//    val wheelVelocities: List<Double>
-//        get() {
-//            lastEncVels.clear()
-//            val wheelVelocities: ArrayList<Double> = ArrayList()
-//            for (motor in motors) {
-//                val vel = motor.velocity
-//                lastEncVels.add(vel as Integer)
-//                wheelVelocities.add(encoderTicksToInches(vel))
-//            }
-//            return wheelVelocities
-//        }
+    override fun getWheelPositions (): List<Double> {
+        lastEncPositions.clear()
+        val wheelPositions: ArrayList<Double> = ArrayList()
+        for (motor in motors) {
+            val position: Integer = motor.currentPosition as Integer
+            lastEncPositions.add(position)
+            wheelPositions.add(encoderTicksToInches(position as Double))
+        }
+        return wheelPositions
+    }
+
+    override fun getWheelVelocities (): List<Double> {
+        lastEncVels.clear()
+        val wheelVelocities: ArrayList<Double> = ArrayList()
+        for (motor in motors) {
+            val vel = motor.velocity
+            lastEncVels.add(vel as Integer)
+            wheelVelocities.add(encoderTicksToInches(vel))
+        }
+        return wheelVelocities
+    }
 
     override fun setMotorPowers(v: Double, v1: Double, v2: Double, v3: Double) {
         leftFront.power = v
