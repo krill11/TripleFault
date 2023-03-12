@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.util.RobotLog
 import com.qualcomm.robotcore.util.WebHandlerManager
 import org.firstinspires.ftc.ftccommon.external.WebHandlerRegistrar
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil
-import org.firstinspires.ftc.teamcode.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer
@@ -26,79 +25,80 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Date
-import java.util.List
+import java.util.List as JList
 import java.util.Objects
 import fi.iki.elonen.NanoHTTPD
 
 object LogFiles {
-    private val ROOT: File = File(AppUtil.ROOT_FOLDER + "/RoadRunner/logs/")
+    private val ROOT: File = File(AppUtil.ROOT_FOLDER.absolutePath + "/RoadRunner/logs/")
     var log = LogFile("uninitialized")
     fun record(
         targetPose: Pose2d,
         pose: Pose2d,
         voltage: Double,
-        lastDriveEncPositions: List<Integer?>,
-        lastDriveEncVels: List<Integer?>,
-        lastTrackingEncPositions: List<Integer?>,
-        lastTrackingEncVels: List<Integer?>
+        lastDriveEncPositions: ArrayList<Integer?>,
+        lastDriveEncVels: ArrayList<Integer?>,
+        lastTrackingEncPositions: ArrayList<Integer?>,
+        lastTrackingEncVels: ArrayList<Integer?>
     ) {
         val nsTime: Long = System.nanoTime()
         if (nsTime - log.nsStart > 3 * 60 * 1000000000L) {
             return
         }
         log.nsTimes.add(nsTime)
-        log.targetXs.add(targetPose.getX())
-        log.targetYs.add(targetPose.getY())
-        log.targetHeadings.add(targetPose.getHeading())
-        log.xs.add(pose.getX())
-        log.ys.add(pose.getY())
-        log.headings.add(pose.getHeading())
+        log.targetXs.add(targetPose.x)
+        log.targetYs.add(targetPose.y)
+        log.targetHeadings.add(targetPose.heading)
+        log.xs.add(pose.x)
+        log.ys.add(pose.y)
+        log.headings.add(pose.heading)
         log.voltages.add(voltage)
-        while (log.driveEncPositions.size() < lastDriveEncPositions.size()) {
+        while (log.driveEncPositions.size < lastDriveEncPositions.size) {
             log.driveEncPositions.add(ArrayList())
         }
-        while (log.driveEncVels.size() < lastDriveEncVels.size()) {
+        while (log.driveEncVels.size < lastDriveEncVels.size) {
             log.driveEncVels.add(ArrayList())
         }
-        while (log.trackingEncPositions.size() < lastTrackingEncPositions.size()) {
+        while (log.trackingEncPositions.size < lastTrackingEncPositions.size) {
             log.trackingEncPositions.add(ArrayList())
         }
-        while (log.trackingEncVels.size() < lastTrackingEncVels.size()) {
+        while (log.trackingEncVels.size < lastTrackingEncVels.size) {
             log.trackingEncVels.add(ArrayList())
         }
-        for (i in 0 until lastDriveEncPositions.size()) {
+        for (i in 0 until lastDriveEncPositions.size) {
             log.driveEncPositions[i].add(
-                lastDriveEncPositions[i]
+                lastDriveEncPositions[i]!!
             )
         }
-        for (i in 0 until lastDriveEncVels.size()) {
-            log.driveEncVels[i].add(lastDriveEncVels[i])
+        for (i in 0 until lastDriveEncVels.size) {
+            log.driveEncVels[i].add(lastDriveEncVels[i]!!)
         }
-        for (i in 0 until lastTrackingEncPositions.size()) {
+
+        for (i in 0 until lastTrackingEncPositions.size) {
             log.trackingEncPositions[i].add(
-                lastTrackingEncPositions[i]
+                lastTrackingEncPositions[i]!!
             )
         }
-        for (i in 0 until lastTrackingEncVels.size()) {
+        for (i in 0 until lastTrackingEncVels.size) {
             log.trackingEncVels[i].add(
-                lastTrackingEncVels[i]
+                lastTrackingEncVels[i]!!
             )
         }
     }
 
-    private val notifHandler: OpModeManagerNotifier.Notifications = object : Notifications() {
+    private val notifHandler: OpModeManagerNotifier.Notifications = object : OpModeManagerNotifier.Notifications {
         @SuppressLint("SimpleDateFormat")
         val dateFormat: DateFormat = SimpleDateFormat("yyyy_MM_dd__HH_mm_ss_SSS")
         val jsonWriter: ObjectWriter = ObjectMapper(JsonFactory())
             .writerWithDefaultPrettyPrinter()
 
-        @Override
-        fun onOpModePreInit(opMode: OpMode) {
-            log = LogFile(opMode.getClass().getCanonicalName())
+        override fun onOpModePreInit(opMode: OpMode) {
+            log = LogFile(opMode.javaClass.canonicalName!!)
 
             // clean up old files
             val fs: Array<File> = Objects.requireNonNull(ROOT.listFiles())
-            Arrays.sort(fs) { a, b -> Long.compare(a.lastModified(), b.lastModified()) }
+            fs.sortByDescending { file -> file.lastModified() }
+            fs.reverse()
             var totalSizeBytes: Long = 0
             for (f in fs) {
                 totalSizeBytes += f.length()
@@ -113,18 +113,16 @@ object LogFiles {
             }
         }
 
-        @Override
-        fun onOpModePreStart(opMode: OpMode?) {
+        override fun onOpModePreStart(opMode: OpMode?) {
             log.nsStart = System.nanoTime()
         }
 
-        @Override
-        fun onOpModePostStop(opMode: OpMode) {
+        override fun onOpModePostStop(opMode: OpMode) {
             log.nsStop = System.nanoTime()
             if (opMode !is OpModeManagerImpl.DefaultOpMode) {
                 ROOT.mkdirs()
                 val filename: String =
-                    dateFormat.format(Date(log.msInit)) + "__" + opMode.getClass()
+                    dateFormat.format(Date(log.msInit)) + "__" + opMode.javaClass
                         .getSimpleName() + ".json"
                 val file = File(ROOT, filename)
                 try {
@@ -152,7 +150,8 @@ object LogFiles {
             val sb = StringBuilder()
             sb.append("<!doctype html><html><head><title>Logs</title></head><body><ul>")
             val fs: Array<File> = Objects.requireNonNull(ROOT.listFiles())
-            Arrays.sort(fs) { a, b -> Long.compare(b.lastModified(), a.lastModified()) }
+            fs.sortByDescending { file -> file.lastModified() }
+            fs.reverse()
             for (f in fs) {
                 sb.append("<li><a href=\"/logs/download?file=")
                 sb.append(f.getName())
@@ -169,14 +168,14 @@ object LogFiles {
             )
         }
         manager.register("/logs/download") { session ->
-            val pairs: Array<String> = session.getQueryParameterString().split("&")
+            val pairs: List<String> = session.getQueryParameterString().split("&")
             if (pairs.size != 1) {
                 return@register NanoHTTPD.newFixedLengthResponse(
                     NanoHTTPD.Response.Status.BAD_REQUEST,
                     NanoHTTPD.MIME_PLAINTEXT, "expected one query parameter, got " + pairs.size
                 )
             }
-            val parts: Array<String> = pairs[0].split("=")
+            val parts: List<String> = pairs[0].split("=")
             if (!parts[0].equals("file")) {
                 return@register NanoHTTPD.newFixedLengthResponse(
                     NanoHTTPD.Response.Status.BAD_REQUEST,
@@ -245,17 +244,17 @@ object LogFiles {
             DriveConstants.LOGO_FACING_DIR
         var USB_FACING_DIR: RevHubOrientationOnRobot.UsbFacingDirection =
             DriveConstants.USB_FACING_DIR
-        var nsTimes: List<Long> = ArrayList()
-        var targetXs: List<Double> = ArrayList()
-        var targetYs: List<Double> = ArrayList()
-        var targetHeadings: List<Double> = ArrayList()
-        var xs: List<Double> = ArrayList()
-        var ys: List<Double> = ArrayList()
-        var headings: List<Double> = ArrayList()
-        var voltages: List<Double> = ArrayList()
-        var driveEncPositions: List<List<Integer>> = ArrayList()
-        var driveEncVels: List<List<Integer>> = ArrayList()
-        var trackingEncPositions: List<List<Integer>> = ArrayList()
-        var trackingEncVels: List<List<Integer>> = ArrayList()
+        var nsTimes: ArrayList<Long> = ArrayList()
+        var targetXs: ArrayList<Double> = ArrayList()
+        var targetYs: ArrayList<Double> = ArrayList()
+        var targetHeadings: ArrayList<Double> = ArrayList()
+        var xs: ArrayList<Double> = ArrayList()
+        var ys: ArrayList<Double> = ArrayList()
+        var headings: ArrayList<Double> = ArrayList()
+        var voltages: ArrayList<Double> = ArrayList()
+        var driveEncPositions: ArrayList<ArrayList<Integer>> = ArrayList()
+        var driveEncVels: ArrayList<ArrayList<Integer>> = ArrayList()
+        var trackingEncPositions: ArrayList<ArrayList<Integer>> = ArrayList()
+        var trackingEncVels: ArrayList<ArrayList<Integer>> = ArrayList()
     }
 }

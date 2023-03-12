@@ -13,12 +13,12 @@ object DashboardUtil {
     private const val DEFAULT_RESOLUTION = 2.0 // distance units; presumed inches
     private const val ROBOT_RADIUS = 9.0 // in
     fun drawPoseHistory(canvas: Canvas, poseHistory: List<Pose2d>) {
-        val xPoints = DoubleArray(poseHistory.size())
-        val yPoints = DoubleArray(poseHistory.size())
-        for (i in 0 until poseHistory.size()) {
+        val xPoints = DoubleArray(poseHistory.size)
+        val yPoints = DoubleArray(poseHistory.size)
+        for (i in 0 until poseHistory.size) {
             val pose: Pose2d = poseHistory[i]
-            xPoints[i] = pose.getX()
-            yPoints[i] = pose.getY()
+            xPoints[i] = pose.x
+            yPoints[i] = pose.y
         }
         canvas.strokePolyline(xPoints, yPoints)
     }
@@ -31,8 +31,8 @@ object DashboardUtil {
         for (i in 0 until samples) {
             val displacement: Double = i * dx
             val pose: Pose2d = path.get(displacement)
-            xPoints[i] = pose.getX()
-            yPoints[i] = pose.getY()
+            xPoints[i] = pose.x
+            yPoints[i] = pose.y
         }
         canvas.strokePolyline(xPoints, yPoints)
     }
@@ -42,12 +42,12 @@ object DashboardUtil {
     }
 
     fun drawRobot(canvas: Canvas, pose: Pose2d) {
-        canvas.strokeCircle(pose.getX(), pose.getY(), ROBOT_RADIUS)
+        canvas.strokeCircle(pose.x, pose.y, ROBOT_RADIUS)
         val v: Vector2d = pose.headingVec().times(ROBOT_RADIUS)
-        val x1: Double = pose.getX() + v.getX() / 2
-        val y1: Double = pose.getY() + v.getY() / 2
-        val x2: Double = pose.getX() + v.getX()
-        val y2: Double = pose.getY() + v.getY()
+        val x1: Double = pose.x + v.x / 2
+        val y1: Double = pose.y + v.y / 2
+        val x2: Double = pose.x + v.x
+        val y2: Double = pose.y + v.y
         canvas.strokeLine(x1, y1, x2, y2)
     }
 }

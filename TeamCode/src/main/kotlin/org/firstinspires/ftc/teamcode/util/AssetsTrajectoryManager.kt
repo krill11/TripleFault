@@ -16,7 +16,6 @@ object AssetsTrajectoryManager {
     /**
      * Loads the group config.
      */
-    @Nullable
     fun loadGroupConfig(): TrajectoryGroupConfig? {
         return try {
             val inputStream: InputStream = AppUtil.getDefContext().getAssets().open(
@@ -31,7 +30,6 @@ object AssetsTrajectoryManager {
     /**
      * Loads a trajectory config with the given name.
      */
-    @Nullable
     fun loadConfig(name: String): TrajectoryConfig? {
         return try {
             val inputStream: InputStream = AppUtil.getDefContext().getAssets().open(
@@ -46,7 +44,6 @@ object AssetsTrajectoryManager {
     /**
      * Loads a trajectory builder with the given name.
      */
-    @Nullable
     fun loadBuilder(name: String): TrajectoryBuilder? {
         val groupConfig: TrajectoryGroupConfig? = loadGroupConfig()
         val config: TrajectoryConfig? = loadConfig(name)
@@ -60,10 +57,7 @@ object AssetsTrajectoryManager {
     /**
      * Loads a trajectory with the given name.
      */
-    @Nullable
     fun load(name: String): Trajectory? {
-        val builder: TrajectoryBuilder = loadBuilder(name)
-            ?: return null
-        return builder.build()
+        return loadBuilder(name)?.build()
     }
 }

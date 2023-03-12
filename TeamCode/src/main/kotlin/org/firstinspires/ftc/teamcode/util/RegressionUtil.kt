@@ -6,7 +6,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.util.ArrayList
-import java.util.List
 
 /**
  * Various regression utilities.
@@ -21,8 +20,8 @@ object RegressionUtil {
      * @return derivative values
      */
     private fun numericalDerivative(x: List<Double>, y: List<Double>): List<Double> {
-        val deriv: List<Double> = ArrayList(x.size())
-        for (i in 1 until x.size() - 1) {
+        val deriv: ArrayList<Double> = ArrayList(x.size)
+        for (i in 1 until x.size - 1) {
             deriv.add(
                 (y[i + 1] - y[i - 1]) /
                         (x[i + 1] - x[i - 1])
@@ -30,8 +29,8 @@ object RegressionUtil {
         }
         // copy endpoints to pad output
         deriv.add(0, deriv[0])
-        deriv.add(deriv[deriv.size() - 1])
-        return deriv
+        deriv.add(deriv[deriv.size - 1])
+        return deriv.toList()
     }
 
     /**
@@ -51,13 +50,13 @@ object RegressionUtil {
     fun fitRampData(
         timeSamples: List<Double>, positionSamples: List<Double>,
         powerSamples: List<Double>, fitStatic: Boolean,
-        @Nullable file: File?
+        file: File?
     ): RampResult {
         if (file != null) {
             try {
                 PrintWriter(file).use { pw ->
                     pw.println("time,position,power")
-                    for (i in 0 until timeSamples.size()) {
+                    for (i in 0 until timeSamples.size) {
                         val time = timeSamples[i]
                         val pos = positionSamples[i]
                         val power = powerSamples[i]
@@ -70,7 +69,7 @@ object RegressionUtil {
         }
         val velSamples = numericalDerivative(timeSamples, positionSamples)
         val rampReg = SimpleRegression(fitStatic)
-        for (i in 0 until timeSamples.size()) {
+        for (i in 0 until timeSamples.size) {
             val vel = velSamples[i]
             val power = powerSamples[i]
             rampReg.addData(vel, power)
@@ -93,13 +92,13 @@ object RegressionUtil {
     fun fitAccelData(
         timeSamples: List<Double>, positionSamples: List<Double>,
         powerSamples: List<Double>, rampResult: RampResult,
-        @Nullable file: File?
+        file: File?
     ): AccelResult {
         if (file != null) {
             try {
                 PrintWriter(file).use { pw ->
                     pw.println("time,position,power")
-                    for (i in 0 until timeSamples.size()) {
+                    for (i in 0 until timeSamples.size) {
                         val time = timeSamples[i]
                         val pos = positionSamples[i]
                         val power = powerSamples[i]
@@ -113,7 +112,7 @@ object RegressionUtil {
         val velSamples = numericalDerivative(timeSamples, positionSamples)
         val accelSamples = numericalDerivative(timeSamples, velSamples)
         val accelReg = SimpleRegression(false)
-        for (i in 0 until timeSamples.size()) {
+        for (i in 0 until timeSamples.size) {
             val vel = velSamples[i]
             val accel = accelSamples[i]
             val power = powerSamples[i]
