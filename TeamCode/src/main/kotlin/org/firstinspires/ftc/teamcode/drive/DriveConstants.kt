@@ -17,11 +17,19 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients
  */
 @Config
 object DriveConstants {
+
+    // TODO move to util.kt
+    val Double.mm: Double
+        get() = this * 0.03937008
+
+    val Double.inch: Double
+        get() = this
+
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    const val TICKS_PER_REV = 1.0
-    const val MAX_RPM = 1.0
+    const val TICKS_PER_REV = 8192.0
+    const val MAX_RPM = 312.0
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -33,7 +41,7 @@ object DriveConstants {
      */
     const val RUN_USING_ENCODER = false
     var MOTOR_VELO_PID: PIDFCoefficients = PIDFCoefficients(
-        0, 0, 0,
+        0.0, 0.0, 0.0,
         getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)
     )
 
@@ -45,7 +53,7 @@ object DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    var WHEEL_RADIUS = 2.0 // in
+    var WHEEL_RADIUS = 96.0.mm // in
     var GEAR_RATIO = 1.0 // output (wheel) speed / input (motor) speed
     var TRACK_WIDTH = 1.0 // in
 
@@ -68,8 +76,8 @@ object DriveConstants {
      */
     var MAX_VEL = 30.0
     var MAX_ACCEL = 30.0
-    var MAX_ANG_VEL: Double = Math.toRadians(60)
-    var MAX_ANG_ACCEL: Double = Math.toRadians(60)
+    var MAX_ANG_VEL: Double = Math.toRadians(60.0)
+    var MAX_ANG_ACCEL: Double = Math.toRadians(60.0)
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.

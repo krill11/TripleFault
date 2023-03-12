@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive
 
+import androidx.annotation.NonNull
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.DriveSignal
@@ -31,7 +32,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunne
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.List
+import kotlin.collections.List
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL
@@ -59,8 +60,8 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
     private val motors: List<DcMotorEx>
     private val imu: IMU
     private val batteryVoltageSensor: VoltageSensor
-    private val lastEncPositions: List<Integer> = ArrayList()
-    private val lastEncVels: List<Integer> = ArrayList()
+    private val lastEncPositions: ArrayList<Integer> = ArrayList()
+    private val lastEncVels: ArrayList<Integer> = ArrayList()
 
     init {
         follower = HolonomicPIDVAFollower(
@@ -75,7 +76,7 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(IMU::class.java, "imu")
-        val parameters: IMU.Parameters = Parameters(
+        val parameters: IMU.Parameters = IMU.Parameters(
             RevHubOrientationOnRobot(
                 DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR
             )
@@ -85,7 +86,7 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
         leftRear = hardwareMap.get(DcMotorEx::class.java, "leftRear")
         rightRear = hardwareMap.get(DcMotorEx::class.java, "rightRear")
         rightFront = hardwareMap.get(DcMotorEx::class.java, "rightFront")
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront)
+        motors = listOf(leftFront, leftRear, rightRear, rightFront)
         for (motor in motors) {
             val motorConfigurationType: MotorConfigurationType = motor.getMotorType().clone()
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0)
@@ -111,19 +112,19 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
         )
     }
 
-    fun trajectoryBuilder(startPose: Pose2d?): TrajectoryBuilder {
-        return TrajectoryBuilder(startPose, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
+    fun trajectoryBuilder(startPose: Pose2d): TrajectoryBuilder {
+        return TrajectoryBuilder(startPose, false, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
     }
 
-    fun trajectoryBuilder(startPose: Pose2d?, reversed: Boolean): TrajectoryBuilder {
+    fun trajectoryBuilder(startPose: Pose2d, reversed: Boolean): TrajectoryBuilder {
         return TrajectoryBuilder(startPose, reversed, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
     }
 
-    fun trajectoryBuilder(startPose: Pose2d?, startHeading: Double): TrajectoryBuilder {
+    fun trajectoryBuilder(startPose: Pose2d, startHeading: Double): TrajectoryBuilder {
         return TrajectoryBuilder(startPose, startHeading, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
     }
 
-    fun trajectorySequenceBuilder(startPose: Pose2d?): TrajectorySequenceBuilder {
+    fun trajectorySequenceBuilder(startPose: Pose2d): TrajectorySequenceBuilder {
         return TrajectorySequenceBuilder(
             startPose,
             VEL_CONSTRAINT, ACCEL_CONSTRAINT,
@@ -133,7 +134,7 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
 
     fun turnAsync(angle: Double) {
         trajectorySequenceRunner.followTrajectorySequenceAsync(
-            trajectorySequenceBuilder(getPoseEstimate())
+            trajectorySequenceBuilder(poseEstimate)
                 .turn(angle)
                 .build()
         )
@@ -172,16 +173,16 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
     fun update() {
         updatePoseEstimate()
         val signal: DriveSignal =
-            trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity())
+            trajectorySequenceRunner.update(poseEstimate, poseVelocity)
         if (signal != null) setDriveSignal(signal)
     }
 
     fun waitForIdle() {
-        while (!Thread.currentThread().isInterrupted() && isBusy) update()
+        while (!Thread.currentThread().isInterrupted && isBusy) update()
     }
 
     val isBusy: Boolean
-        get() = trajectorySequenceRunner.isBusy()
+        get() = trajectorySequenceRunner.isBusy
 
     fun setMode(runMode: DcMotor.RunMode?) {
         for (motor in motors) {
@@ -207,69 +208,66 @@ class SampleMecanumDrive(hardwareMap: HardwareMap) :
 
     fun setWeightedDrivePower(drivePower: Pose2d) {
         var vel: Pose2d = drivePower
-        if ((Math.abs(drivePower.getX()) + Math.abs(drivePower.getY())
-                    + Math.abs(drivePower.getHeading())) > 1
+        if ((Math.abs(drivePower.x) + Math.abs(drivePower.y)
+                    + Math.abs(drivePower.heading)) > 1
         ) {
             // re-normalize the powers according to the weights
             val denom: Double =
-                VX_WEIGHT * Math.abs(drivePower.getX()) + VY_WEIGHT * Math.abs(drivePower.getY()) + OMEGA_WEIGHT * Math.abs(
-                    drivePower.getHeading()
+                VX_WEIGHT * Math.abs(drivePower.x) + VY_WEIGHT * Math.abs(drivePower.y) + OMEGA_WEIGHT * Math.abs(
+                    drivePower.heading
                 )
             vel = Pose2d(
-                VX_WEIGHT * drivePower.getX(),
-                VY_WEIGHT * drivePower.getY(),
-                OMEGA_WEIGHT * drivePower.getHeading()
+                VX_WEIGHT * drivePower.x,
+                VY_WEIGHT * drivePower.y,
+                OMEGA_WEIGHT * drivePower.heading
             ).div(denom)
         }
         setDrivePower(vel)
     }
 
-    @get:Override
-    @get:NonNull
-    val wheelPositions: List<Double>
-        get() {
-            lastEncPositions.clear()
-            val wheelPositions: List<Double> = ArrayList()
-            for (motor in motors) {
-                val position: Int = motor.getCurrentPosition()
-                lastEncPositions.add(position)
-                wheelPositions.add(encoderTicksToInches(position))
-            }
-            return wheelPositions
-        }
+//    @get:Override
+//    val wheelPositions: List<Double>
+//        get() {
+//            lastEncPositions.clear()
+//            val wheelPositions: ArrayList<Double> = ArrayList()
+//            for (motor in motors) {
+//                val position: Integer = motor.currentPosition as Integer
+//                lastEncPositions.add(position)
+//                wheelPositions.add(encoderTicksToInches(position as Double))
+//            }
+//            return wheelPositions
+//        }
+//
+//    @get:Override
+//    val wheelVelocities: List<Double>
+//        get() {
+//            lastEncVels.clear()
+//            val wheelVelocities: ArrayList<Double> = ArrayList()
+//            for (motor in motors) {
+//                val vel = motor.velocity
+//                lastEncVels.add(vel as Integer)
+//                wheelVelocities.add(encoderTicksToInches(vel))
+//            }
+//            return wheelVelocities
+//        }
 
-    @get:Override
-    val wheelVelocities: List<Double>
-        get() {
-            lastEncVels.clear()
-            val wheelVelocities: List<Double> = ArrayList()
-            for (motor in motors) {
-                val vel = motor.getVelocity() as Int
-                lastEncVels.add(vel)
-                wheelVelocities.add(encoderTicksToInches(vel))
-            }
-            return wheelVelocities
-        }
-
-    @Override
-    fun setMotorPowers(v: Double, v1: Double, v2: Double, v3: Double) {
-        leftFront.setPower(v)
-        leftRear.setPower(v1)
-        rightRear.setPower(v2)
-        rightFront.setPower(v3)
+    override fun setMotorPowers(v: Double, v1: Double, v2: Double, v3: Double) {
+        leftFront.power = v
+        leftRear.power = v1
+        rightRear.power = (v2)
+        rightFront.power = (v3)
     }
 
-    @get:Override
-    val rawExternalHeading: Double
+    override val rawExternalHeading: Double
         get() = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)
 
     @get:Override
-    val externalHeadingVelocity: Double
+    val externalHeadingVelocity: Float
         get() = imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate
 
     companion object {
-        var TRANSLATIONAL_PID: PIDCoefficients = PIDCoefficients(0, 0, 0)
-        var HEADING_PID: PIDCoefficients = PIDCoefficients(0, 0, 0)
+        var TRANSLATIONAL_PID: PIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
+        var HEADING_PID: PIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
         var LATERAL_MULTIPLIER = 1.0
         var VX_WEIGHT = 1.0
         var VY_WEIGHT = 1.0
