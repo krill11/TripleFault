@@ -1,24 +1,26 @@
 package org.firstinspires.ftc.teamcode.Team.ComplexRobots
 
 import com.arcrobotics.ftclib.geometry.Rotation2d
+import com.arcrobotics.ftclib.hardware.motors.Motor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.Team.BasicRobots.Mecanum
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF
 import org.firstinspires.ftc.robotcore.external.navigation.*
-import org.firstinspires.ftc.teamcode.Team.Secrets;
+import org.firstinspires.ftc.teamcode.Team.Secrets
 
 /**
  *    This file is here for the addition of other hardware components onto the basic robot
  *    and for the definition of functions to be later used in the manual control modes
  */
-class Robot : Mecanum() {
+open class Robot : Mecanum() {
     var translation = VectorF(0.0F, 0.0F, 0.0F)
     /**
      *   firstAngle  is  roll
@@ -33,10 +35,26 @@ class Robot : Mecanum() {
     private var targetVisible = false
     private var allTrackables: MutableList<VuforiaTrackable> = ArrayList()
 
-    override fun init(hardwareMap: HardwareMap) {
-        super.init(hardwareMap)
+    val L = 96.8375f /* millimeters */
+    val B = 88.9f /* millimeters */
+    val mmPerTick = 0.117445404073
 
-        initVuforia(hardwareMap);
+    var encoders = mutableMapOf<String, DcMotor>()
+
+    override fun init(hardwareMap: HardwareMap) {
+
+        encoders["LeftEncoder"] = hardwareMap.dcMotor["LeftEncoder"]
+        encoders["RightEncoder"] = hardwareMap.dcMotor["RightEncoder"]
+        encoders["BackEncoder"] = hardwareMap.dcMotor["BackEncoder"]
+
+        encoders["LeftEncoder"]!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+        encoders["RightEncoder"]!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+        encoders["BackEncoder"]!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+        super.init(hardwareMap)
+        initVuforia(hardwareMap)
     }
 
     /**
@@ -63,10 +81,10 @@ class Robot : Mecanum() {
                         AngleUnit.DEGREES
                     )
                 }
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     }
 
     private fun initVuforia(hardwareMap: HardwareMap) {
@@ -248,7 +266,7 @@ class Robot : Mecanum() {
     }
 
     companion object {
-        private const val VUFORIA_KEY = Secrets.VUFORIA_KEY;
+        private const val VUFORIA_KEY = Secrets.VUFORIA_KEY
 
         // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
         // We will define some constants and conversions here

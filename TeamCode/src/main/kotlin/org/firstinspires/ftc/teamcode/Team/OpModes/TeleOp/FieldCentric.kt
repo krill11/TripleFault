@@ -14,6 +14,17 @@ import kotlin.math.sin
 class FieldCentric : LinearOpMode() {
     var robot = Robot()
     val mmPerInch = 25.4f
+
+    /* X, Y, Theta */
+
+    var positions: DoubleArray = doubleArrayOf(0.0, 0.0, 0.0)
+    var deltas: DoubleArray = doubleArrayOf(0.0, 0.0, 0.0)
+
+    /* L, R, B */
+
+    var tickPassed: IntArray = intArrayOf(0, 0, 0)
+    var lastTick: IntArray = intArrayOf(0, 0, 0)
+
     @Throws(InterruptedException::class)
 
     override fun runOpMode() {
@@ -32,6 +43,15 @@ class FieldCentric : LinearOpMode() {
         if (isStopRequested) return
 
         while (opModeIsActive()) {
+
+            tickPassed[0] = robot.encoders["LeftEncoder"]!!.currentPosition
+            tickPassed[1] = robot.encoders["RightEncoder"]!!.currentPosition
+            tickPassed[2] = robot.encoders["BackEncoder"]!!.currentPosition
+
+            deltas[0] = (((tickPassed[0] + tickPassed[1]).toString().toDouble())/2) * robot.mmPerTick
+            deltas[2] = (((tickPassed[1] - tickPassed[0]).toString().toDouble())/(robot.L * 2)) * robot.mmPerTick
+            deltas[1] = (tickPassed[2] - (robot.B * ((tickPassed[1] - tickPassed[0]).toString().toDouble())/(robot.L * 2))) * robot.mmPerTick
+
             val y = -gamepad1.left_stick_y.toDouble()
             val x = gamepad1.left_stick_x * 1.1
             val rx = gamepad1.right_stick_x.toDouble()
@@ -71,6 +91,10 @@ class FieldCentric : LinearOpMode() {
                 .setStroke("red")
                 .strokePolyline(xface, yface)
             dashboard.sendTelemetryPacket(packet)
+            telemetry.addData("X", deltas[0])
+            telemetry.addData("Y", deltas[1])
+            telemetry.addData("Heading", deltas[2])
+            telemetry.update()
         }
     }
 }
